@@ -64,12 +64,12 @@ export default function Home() {
         </Link>
 
         <Link
-          href="/PrecedentMap"
+          href="/Syllabus"
           className="block p-6 text-center bg-white rounded-lg shadow hover:shadow-lg transition"
         >
-          <h2 className="text-2xl font-semibold mb-2">Precedent Map</h2>
+          <h2 className="text-2xl font-semibold mb-2">Syllabus converter</h2>
           <p className="text-gray-600">
-            Visualize case law citations as interactive graphs.
+            Convert your syllabus into a well structured Calendar
           </p>
         </Link>
       </div>

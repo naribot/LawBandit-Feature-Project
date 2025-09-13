@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import * as chrono from "chrono-node";
+import { Inter } from "next/font/google";
 
-// Basic event type
+const inter = Inter({ subsets: ["latin"] });
+
 type SyllabusItem = {
   id: string;
   title: string;
@@ -26,8 +28,8 @@ export default function SyllabusPage() {
 
   const extractEvents = () => {
     const lines = inputText.split("\n").map((l) => l.trim()).filter(Boolean);
-
     const newEvents: SyllabusItem[] = [];
+
     lines.forEach((line, i) => {
       const parsed = chrono.parse(line);
       if (parsed.length > 0) {
@@ -47,50 +49,141 @@ export default function SyllabusPage() {
     setEvents(newEvents);
   };
 
+  const resetAll = () => {
+    setInputText("");
+    setEvents([]);
+  };
+
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-3xl font-bold text-blue-700 mb-6">Syllabus → Calendar</h1>
+    <main className="min-h-screen bg-gray-200 p-8 flex flex-col items-center justify-center">
+        <head>
+            <title>Syllabus converter</title>
+        </head>
+      {events.length === 0 ? (
 
-      <textarea
-        placeholder="Paste syllabus here..."
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
-        className="w-full h-48 p-3 border border-gray-300 rounded mb-4 text-black"
-      />
+  <div className="text-center max-w-3xl w-full -mt-110 border-10 bg-white p-11 border-grey-400"> 
+    <h1 className="text-5xl font-extrabold text-blue-900 mb-30 tracking-tight">
+      Syllabus → Calendar Converter
+    </h1>
 
+    <textarea
+      placeholder="Paste syllabus here..."
+      value={inputText}
+      onChange={(e) => setInputText(e.target.value)}
+      className="w-full h-56 p-4 border-10 border-gray-200 rounded mb-6 text-lg text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+    />
+
+    <div className="flex gap-4 justify-center">
       <button
         onClick={extractEvents}
-        className="px-4 py-2 bg-indigo-600 text-white rounded shadow hover:bg-indigo-700"
+        className="px-6 py-3 bg-indigo-600 mt-20 text-white text-lg font-semibold rounded-lg shadow hover:bg-indigo-700"
       >
-        Create Calendar
+        Extract Events
       </button>
+      <button
+        onClick={resetAll}
+        className="px-6 py-3 bg-red-600 mt-20 text-white text-lg font-semibold rounded-lg shadow hover:bg-red-700"
+      >
+        Reset
+      </button>
+    </div>
+  </div>
+  
+) : (
 
-      <div className="mt-6">
-        {events.length > 0 ? (
+        // After extraction
+        <div className="w-full max-w-3xl">
+          <h1 className="text-3xl font-bold text-blue-900 mb-6">
+            Extracted Events
+          </h1>
+
+          <div className="flex gap-4 mb-6">
+            <button
+              onClick={() =>
+                setEvents((prev) =>
+                  prev.map((ev) => ({
+                    ...ev,
+                    dateStart: new Date(ev.dateStart.getTime() + 1 * 86400000),
+                  }))
+                )
+              }
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-black"
+            >
+              Shift +1 day
+            </button>
+            <button
+              onClick={() =>
+                setEvents((prev) =>
+                  prev.map((ev) => ({
+                    ...ev,
+                    dateStart: new Date(ev.dateStart.getTime() - 1 * 86400000),
+                  }))
+                )
+              }
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-black"
+            >
+              Shift -1 day
+            </button>
+            <button
+              onClick={resetAll}
+              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Reset
+            </button>
+          </div>
+
           <ul className="space-y-3">
             {events.map((ev) => (
-              <li
-                key={ev.id}
-                className="bg-white p-4 rounded shadow flex justify-between items-center"
-              >
-                <div>
-                  <p className="font-semibold text-gray-800">{ev.title}</p>
-                  <p className="text-sm text-gray-600">
-                    {ev.dateStart.toDateString()} ({ev.kind})
-                  </p>
-                </div>
-                <span className="text-xs text-gray-400 italic">
-                  from: "{ev.sourceLine}"
-                </span>
+              <li key={ev.id} className="bg-white p-4 rounded shadow space-y-2">
+                <input
+                  type="text"
+                  value={ev.title}
+                  onChange={(e) =>
+                    setEvents((prev) =>
+                      prev.map((x) =>
+                        x.id === ev.id ? { ...x, title: e.target.value } : x
+                      )
+                    )
+                  }
+                  className="font-semibold text-gray-800 w-full border-b border-gray-200"
+                />
+                <input
+                  type="date"
+                  value={ev.dateStart.toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    setEvents((prev) =>
+                      prev.map((x) =>
+                        x.id === ev.id
+                          ? { ...x, dateStart: new Date(e.target.value) }
+                          : x
+                      )
+                    )
+                  }
+                  className="border rounded px-2 py-1 text-gray-700"
+                />
+                <select
+                  value={ev.kind}
+                  onChange={(e) =>
+                    setEvents((prev) =>
+                      prev.map((x) =>
+                        x.id === ev.id
+                          ? { ...x, kind: e.target.value as SyllabusItem["kind"] }
+                          : x
+                      )
+                    )
+                  }
+                  className="ml-2 border rounded px-2 py-1 text-gray-700"
+                >
+                  <option value="exam">Exam</option>
+                  <option value="assignment">Assignment</option>
+                  <option value="reading">Reading</option>
+                  <option value="other">Other</option>
+                </select>
               </li>
             ))}
           </ul>
-        ) : (
-          <p className="text-gray-600 mt-4">
-            Paste some text above and click <strong>Extract Events</strong>.
-          </p>
-        )}
-      </div>
+        </div>
+      )}
     </main>
   );
 }

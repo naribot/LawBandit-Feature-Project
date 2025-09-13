@@ -121,6 +121,9 @@ export default function IRACPage() {
 
   return (
     <main className="min-h-screen bg-gray-100 p-8">
+      <head>
+        <title>IRAC Coach</title>
+      </head>
       <header className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-extrabold text-gray-800">IRAC Coach</h1>
         <Link
