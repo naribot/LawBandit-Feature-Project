@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -51,6 +52,27 @@ export default function Home() {
             Read our docs
           </a>
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+        <Link
+          href="/irac"
+          className="block p-6 text-center bg-white rounded-lg shadow hover:shadow-lg transition"
+        >
+          <h2 className="text-2xl font-semibold mb-2">IRAC Coach</h2>
+          <p className="text-gray-600">
+            Practice structuring legal analysis with real-time feedback.
+          </p>
+        </Link>
+
+        <Link
+          href="/PrecedentMap"
+          className="block p-6 text-center bg-white rounded-lg shadow hover:shadow-lg transition"
+        >
+          <h2 className="text-2xl font-semibold mb-2">Precedent Map</h2>
+          <p className="text-gray-600">
+            Visualize case law citations as interactive graphs.
+          </p>
+        </Link>
+      </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
