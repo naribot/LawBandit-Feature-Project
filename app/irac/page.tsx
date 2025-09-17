@@ -2,9 +2,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-
+const Issue_Min_Char = 100; 
+const Rule_Min_Char = 150;
+const Analysis_Min_Char = 350;
+const Conclusion_Min_Char = 100;
 function IssueCheck(text: string) {
-  if (text.trim().length < 10) return "Issue seems too short.";
+  if (text.trim().length < Issue_Min_Char) return "Issue seems too short.";
   return "Looks good.";
 }
 function RuleCheck(text: string) {
@@ -19,6 +22,10 @@ function ConclusionCheck(text: string) {
   if (text.split(".").length < 2) return "Conclusion should be at least one sentence.";
   return "Looks good.";
 }
+function wordCount(text: string) {
+  return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+}
+
 // Markdown export
 function downloadMarkdown(data: { issue: string; rule: string; analysis: string; conclusion: string }) {
   const content = `# IRAC Answer
@@ -209,10 +216,24 @@ export default function IRACPage() {
             onChange={(e) => setIssue(e.target.value)}
             className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
           />
-          <p className="mt-2 text-sm text-gray-600">{IssueCheck(issue)}</p>
+          <button
+            type="button"
+            onClick={() => setIssue("")}
+            className="self-end mt-2 px-2 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 rounded"
+          >
+            Clear
+          </button>
+          <p className="mt-2 text-sm flex items-center justify-between">
+            <span className={issue.trim().length < Issue_Min_Char ? "text-red-600" : "text-green-600"}>
+              {IssueCheck(issue)}
+            </span>
+            <span className="text-gray-500">
+              {issue.trim().length}/{Issue_Min_Char} chars • {wordCount(issue)} words
+            </span>
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg border-4 border-grey shadow p-4 flex flex-col">
+        <div className="bg-white rounded-lg border-4 border-grey shadow p-4 flex flex-col relative">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Rule</h2>
           <textarea
             placeholder="Summarize the rule(s)..."
@@ -220,10 +241,21 @@ export default function IRACPage() {
             onChange={(e) => setRule(e.target.value)}
             className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
           />
-          <p className="mt-2 text-sm text-gray-600">{RuleCheck(rule)}</p>
+          <button
+            type="button"
+            onClick={() => setRule("")}
+            className="self-end mt-2 px-2 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 rounded"
+          >
+            Clear
+          </button>
+          <p className="mt-2 text-sm text-gray-500">{RuleCheck(rule)}
+            <span className="text-gray-500 absolute bottom-2 right-2">
+              {rule.trim().length}/{Rule_Min_Char} chars • {wordCount(rule)} words
+            </span>
+          </p>
         </div>
 
-        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col">
+        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col relative">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Analysis</h2>
           <textarea
             placeholder="Apply the rule to the facts..."
@@ -231,10 +263,21 @@ export default function IRACPage() {
             onChange={(e) => setAnalysis(e.target.value)}
             className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
           />
-          <p className="mt-2 text-sm text-gray-600">{AnalysisCheck(analysis)}</p>
+          <button
+            type="button"
+            onClick={() => setAnalysis("")}
+            className="self-end mt-2 px-2 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 rounded"
+          >
+            Clear
+          </button>
+          <p className="mt-2 text-sm text-gray-600">{AnalysisCheck(analysis)}
+            <span className=" absolute bottom-2 right-2 text-gray-500">
+              {analysis.trim().length}/{Analysis_Min_Char} chars • {wordCount(analysis)} words
+            </span>
+          </p>
         </div>
 
-        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col">
+        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col relative">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Conclusion</h2>
           <textarea
             placeholder="Wrap it up..."
@@ -242,7 +285,19 @@ export default function IRACPage() {
             onChange={(e) => setConclusion(e.target.value)}
             className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
           />
-          <p className="mt-2 text-sm text-gray-600">{ConclusionCheck(conclusion)}</p>
+          <button
+            type="button"
+            onClick={() => setConclusion("")}
+            className="self-end mt-2 px-2 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 rounded"
+          >
+            Clear
+          </button>
+
+          <p className="mt-2 text-sm text-gray-600">{ConclusionCheck(conclusion)}
+            <span className="absolute bottom-2 right-2 text-gray-500">
+              {conclusion.trim().length}/{Conclusion_Min_Char} chars • {wordCount(conclusion)} words
+            </span>
+          </p>
         </div>
       </section>
       {isDoneOpen && (
