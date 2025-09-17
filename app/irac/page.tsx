@@ -82,6 +82,8 @@ export default function IRACPage() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
+  const [isDoneOpen, setIsDoneOpen] = useState(false);
+
 
 
   // Timer
@@ -128,9 +130,9 @@ export default function IRACPage() {
         <h1 className="text-4xl font-extrabold text-gray-800">IRAC Coach</h1>
         <Link
           href="/"
-          className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded shadow"
+          className="p-0 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded shadow mr-40"
         >
-          Home
+          <img src="https://static.vecteezy.com/system/resources/previews/000/366/438/original/home-vector-icon.jpg" alt = "Home icon." className="w-12 h-10 border-2 rounded-1g" ></img>
         </Link>
         <div className="flex items-center gap-4">
             {!showTimer && (
@@ -147,7 +149,7 @@ export default function IRACPage() {
 
             {showTimer && (
             <>
-            <span className="text-2xl font-mono bg-white px-4 py-2 rounded shadow">
+            <span className="text-2xl font-mono bg-white px-4 py-2 rounded shadow text-black">
                 {formatTime(time)}
             </span>
             <button
@@ -170,11 +172,11 @@ export default function IRACPage() {
             >
                 Reset
             </button>
-            <button
+            {/*<button
               onClick={() => downloadMarkdown({ issue, rule, analysis, conclusion })}
               className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded shadow"
             >
-              Export Markdown
+              Export .md file
             </button>
 
             <button
@@ -183,6 +185,15 @@ export default function IRACPage() {
             >
               Export Word
             </button>
+             */}
+
+             {/* Thought it was better to add a pop up rather than displaying these buttons on the page*/}
+            <button
+              onClick={() => setIsDoneOpen(true)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow"
+            >
+              Done
+            </button>
 
             </>
             )}
@@ -190,7 +201,7 @@ export default function IRACPage() {
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
-        <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Issue</h2>
           <textarea
             placeholder="State the issue clearly..."
@@ -201,7 +212,7 @@ export default function IRACPage() {
           <p className="mt-2 text-sm text-gray-600">{IssueCheck(issue)}</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+        <div className="bg-white rounded-lg border-4 border-grey shadow p-4 flex flex-col">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Rule</h2>
           <textarea
             placeholder="Summarize the rule(s)..."
@@ -212,7 +223,7 @@ export default function IRACPage() {
           <p className="mt-2 text-sm text-gray-600">{RuleCheck(rule)}</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Analysis</h2>
           <textarea
             placeholder="Apply the rule to the facts..."
@@ -223,7 +234,7 @@ export default function IRACPage() {
           <p className="mt-2 text-sm text-gray-600">{AnalysisCheck(analysis)}</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-4 flex flex-col">
+        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Conclusion</h2>
           <textarea
             placeholder="Wrap it up..."
@@ -234,6 +245,53 @@ export default function IRACPage() {
           <p className="mt-2 text-sm text-gray-600">{ConclusionCheck(conclusion)}</p>
         </div>
       </section>
+      {isDoneOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setIsDoneOpen(false)}  
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg"
+            onClick={(e) => e.stopPropagation()} 
+          >
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            Export your IRAC as a file
+          </h3>
+          <p className="text-sm text-gray-600 mb-6">
+            Choose format to download your draft.
+          </p>
+
+          <div className="flex items-center justify-end gap-3">
+            <button
+              onClick={() => setIsDoneOpen(false)}
+              className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                downloadMarkdown({ issue, rule, analysis, conclusion });
+                setIsDoneOpen(false);
+              }}
+              className="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Download .md
+            </button>
+            <button
+              onClick={() => {
+                spillNotesAsWord({ issue, rule, analysis, conclusion });
+                setIsDoneOpen(false);
+              }}
+              className="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              Download .docx
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </main>
   );
 }
