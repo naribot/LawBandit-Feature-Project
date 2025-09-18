@@ -196,7 +196,9 @@ export default function IRACPage() {
 
              {/* Thought it was better to add a pop up rather than displaying these buttons on the page*/}
             <button
-              onClick={() => setIsDoneOpen(true)}
+              onClick={() => {setIsDoneOpen(true)
+                             setIsRunning(false);
+              }}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow"
             >
               Done
@@ -208,7 +210,7 @@ export default function IRACPage() {
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
-        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col">
+        <div className="bg-white border-4 rounded-lg border-gray-400 shadow p-4 flex flex-col">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Issue</h2>
           <textarea
             placeholder="State the issue clearly..."
@@ -233,7 +235,7 @@ export default function IRACPage() {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg border-4 border-grey shadow p-4 flex flex-col relative">
+        <div className="bg-white rounded-lg border-4 border-gray-400 shadow p-4 flex flex-col relative">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Rule</h2>
           <textarea
             placeholder="Summarize the rule(s)..."
@@ -255,7 +257,7 @@ export default function IRACPage() {
           </p>
         </div>
 
-        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col relative">
+        <div className="bg-white border-4 border-gray-400 rounded-lg shadow p-4 flex flex-col relative">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Analysis</h2>
           <textarea
             placeholder="Apply the rule to the facts..."
@@ -277,7 +279,7 @@ export default function IRACPage() {
           </p>
         </div>
 
-        <div className="bg-white border-4 border-grey rounded-lg shadow p-4 flex flex-col relative">
+        <div className="bg-white border-4 border-gray-400 rounded-lg shadow p-4 flex flex-col relative">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Conclusion</h2>
           <textarea
             placeholder="Wrap it up..."

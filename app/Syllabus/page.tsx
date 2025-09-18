@@ -6,6 +6,9 @@ import { Inter } from "next/font/google";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { createEvents } from "ics";
+import Head from "next/head";
+
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,38 +28,118 @@ function classifyEvent(line: string): SyllabusItem["kind"] {
   return "other";
 }
 
+function extractEventsFromText(sourceText: string): SyllabusItem[] {
+  const lines = sourceText
+    .split(/\r?\n+/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  const results: SyllabusItem[] = [];
+
+  lines.forEach((line, i) => {
+    const parsed = chrono.parse(line);
+    if (parsed.length > 0) {
+      parsed.forEach((p) => {
+        results.push({
+          id: `${i}-${p.index}`,
+          title: line.replace(p.text, "").trim() || "Untitled",
+          dateStart: p.start.date(),
+          kind: classifyEvent(line),
+          sourceLine: line,
+        });
+      });
+    }
+  });
+
+  return results;
+}
+
+// client only pdf to text
+async function pdfFileToText(file: File): Promise<string> {
+  const data = await file.arrayBuffer();
+
+  const pdfjs = await import("pdfjs-dist");
+
+  
+  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+
+  const pdf = await pdfjs.getDocument({ data }).promise;
+
+  let fullText = "";
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+    const page = await pdf.getPage(pageNum);
+    const content = await page.getTextContent();
+    const strings = content.items.map((it: any) =>
+      "str" in it ? it.str : it?.text || ""
+    );
+    fullText += strings.join(" ") + "\n";
+  }
+
+  return fullText.replace(/\s+/g, " ").trim();
+}
+
+
+
 export default function SyllabusPage() {
   const [inputText, setInputText] = useState("");
   const [events, setEvents] = useState<SyllabusItem[]>([]);
   const [view, setView] = useState<"list" | "calendar">("list");
+  const [error, setError] = useState<string | null>(null);
 
-  const extractEvents = () => {
-    const lines = inputText.split("\n").map((l) => l.trim()).filter(Boolean);
-    const newEvents: SyllabusItem[] = [];
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    lines.forEach((line, i) => {
-      const parsed = chrono.parse(line);
-      if (parsed.length > 0) {
-        parsed.forEach((result) => {
-          const event: SyllabusItem = {
-            id: `${i}-${result.index}`,
-            title: line.replace(result.text, "").trim() || "Untitled",
-            dateStart: result.start.date(),
-            kind: classifyEvent(line),
-            sourceLine: line,
-          };
-          newEvents.push(event);
-        });
-      }
+  try {
+    setError(null);
+    const text = await pdfFileToText(file);
+
+    // 🚀 send to our API route (mocked for now)
+    const res = await fetch("/api/syllabus-extract", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
     });
 
+    if (!res.ok) throw new Error("Failed to call syllabus-extract API");
+    const extracted = await res.json();
+
+    setEvents(
+      extracted.map((ev: any, i: number) => ({
+        id: `llm-${i}`,
+        title: ev.title || "Untitled",
+        dateStart: new Date(ev.date),
+        kind: ev.kind || "other",
+        sourceLine: ev.sourceLine || "",
+      }))
+    );
+  } catch (err) {
+    console.error(err);
+    setError("Failed to process the PDF. Try another file.");
+  } finally {
+    e.target.value = "";
+  }
+};
+
+
+
+  const extractEvents = () => {
+    setError(null);
+    const newEvents = extractEventsFromText(inputText);
     setEvents(newEvents);
+    if (newEvents.length === 0) {
+      setError('No dates found. Try including keywords like "due", "exam", or an actual date.');
+    }
   };
+
 
   const resetAll = () => {
     setInputText("");
     setEvents([]);
+    setError(null);
+
   };
+  
 
   const exportICS = () => {
     const icsEvents = events.map((ev) => ({
@@ -87,38 +170,59 @@ export default function SyllabusPage() {
 
   return (
     <main className="min-h-screen bg-gray-200 p-8 flex flex-col items-center justify-center">
-      <head>
+      <Head>
         <title>Syllabus converter</title>
-      </head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
  
       {events.length === 0 ? (
         // Initial screen
-        <div className="text-center max-w-3xl w-full -mt-110 border-8 br-20 bg-white p-11 rounded 1g border-indigo-800 ">
+        <div className="text-center max-w-3xl w-full mt-10 border-8 br-20 bg-white p-11 rounded 1g border-indigo-800 ">
           <h1 className="text-5xl font-extrabold text-blue-900 mb-30 tracking-tight">
             Syllabus → Calendar Converter
           </h1>
 
           <textarea
-            placeholder="Paste syllabus here..."
+            placeholder="Paste syllabus here... (or upload pdf below)"
             value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
+            onChange={(e) => {setInputText(e.target.value)
+              if (error) setError(null);}
+            }
             className="w-full h-56 p-4 border-10 border-gray-200 rounded mb-6 text-lg text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
 
           <div className="flex gap-4 justify-center">
             <button
               onClick={extractEvents}
-              className="px-6 py-3 bg-indigo-900 mt-20 text-white mr-20 text-lg font-semibold rounded-lg shadow hover:bg-indigo-700"
+              className="px-6 py-3 bg-indigo-900 mt-20 text-white mr-20 text-lg font-semibold rounded-lg shadow hover:bg-indigo-700 cursor-pointer"
             >
               Extract Events
             </button>
             <button
               onClick={resetAll}
-              className="px-2 py-2 bg-grey-600 mt-20 text-white text-lg font-semibold rounded-lg shadow hover:bg-red-700"
+              className="px-2 py-2 bg-grey-600 mt-20 text-white text-lg font-semibold rounded-lg shadow hover:bg-red-700 cursor-pointer"
             >
               <img src="https://t4.ftcdn.net/jpg/05/30/25/61/360_F_530256108_XvKrhRPnlUYkK8PZhEiEDyS8zanyTJjc.jpg" alt="A pink eraser." className="w-15 h-10 border-2 rounded-1g"></img>
             </button>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={handlePdfUpload}
+              className="hidden"
+              id="pdfUpload"
+            />
+            <label
+              htmlFor="pdfUpload"
+              className="px-3 py-3 bg-indigo-900 mt-20 ml-30 text-white text-lg font-semibold rounded-lg shadow hover:bg-indigo-500 cursor-pointer"
+            >
+              Upload PDF
+            </label>
           </div>
+          {error && (
+            <div role="alert" className="mt-4 text-sm text-red-600">
+              {error}
+            </div>
+          )}
         </div>
       ) : (
         // After extraction
