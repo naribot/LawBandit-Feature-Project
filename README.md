@@ -14,10 +14,13 @@
 
 		Features
 Starting this project, The Idea was to build small but useful tools for any lawstudents that would seamlessly flow good with the LawBandit website.
+
 For IRAC Coach:
+
 I wanted something that could help me structure answers in the IRAC format. I added features step by step, first just the text boxes, then character/word counters, and finally a “Done” button that makes exporting simple. Instead of having multiple download buttons cluttering the page, the Done button pops up an option to save as Markdown or Word. After doing some research, I found that legal writing as a huge part of law students’ education and practice. This insight gave me the idea to build this tool, which helps users practice structuring their legal while mimicking the timing and word count pressures of law school exams, while keeping the tool clean and practical. This is just an MVP that could be built up on, like adding a customizable timer, or LLM powered suggestions to improve their Writing, All possible with more time and budget allocations.
 
 For Syllabus Converter:
+
 My first version only worked if I pasted text from the syllabus and used a date-parsing library. It worked okay for plain text, but not for PDFs with tables. To fix that, I added an API route that sends the syllabus text to a OpenAI LLM, which then returns all the important dates in JSON format. This way, uploading a syllabus PDF now works just as well as pasting plain text. I also included different ways to view the syllabus as list view and calendar view. The List View lets the user customize each item by choosing its type (reading, assignment, exam, or other) before exporting everything as an .ics file, which can then be imported into Google Calendar. The Calendar View simplifies things further by visually displaying all events in a monthly calendar layout, powered by the react-calendar library. With more time, its possible to modify the button to directly import the .ics file into google calendar using their API.
 
 For Landing Page
