@@ -27,8 +27,11 @@ function wordCount(text: string) {
 }
 
 // Markdown export
-function downloadMarkdown(data: { issue: string; rule: string; analysis: string; conclusion: string }) {
+function downloadMarkdown(data: { issue: string; rule: string; analysis: string; conclusion: string }, elapsedSeconds : number) {
+  const elapsed = formatTime(elapsedSeconds);
   const content = `# IRAC Answer
+
+ **Time Spent:** ${elapsed} 
 
  Issue
 ${data.issue}
@@ -53,16 +56,22 @@ ${data.conclusion}
 }
 
 // DOCX export
-async function spillNotesAsWord(iracNotes: { issue: string; rule: string; analysis: string; conclusion: string }) {
+async function spillNotesAsWord(iracNotes: { issue: string; rule: string; analysis: string; conclusion: string }, elapsedSeconds: number) {
+
   const { Document, Packer, Paragraph } = await import("docx");
 
   
   const combinedText = `${iracNotes.issue} (issue). ${iracNotes.rule} (rule). ${iracNotes.analysis} (analysis). ${iracNotes.conclusion} (conclusion).`;
+    const elapsed = formatTime(elapsedSeconds);
+
 
   const draftDoc = new Document({
     sections: [
       {
         children: [
+          new Paragraph("IRAC Answer"),
+          new Paragraph(`Time Spent: ${elapsed}`),
+          new Paragraph(""),
           new Paragraph(combinedText),
         ],
       },
@@ -79,6 +88,11 @@ async function spillNotesAsWord(iracNotes: { issue: string; rule: string; analys
 }
 
 
+function formatTime(t: number) {
+  const minutes = Math.floor(t / 60).toString().padStart(2, "0");
+  const seconds = (t % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
+}
 
 
 export default function IRACPage() {
@@ -122,11 +136,6 @@ export default function IRACPage() {
     }
   }, []);
 
-  const formatTime = (t: number) => {
-    const minutes = Math.floor(t / 60).toString().padStart(2, "0");
-    const seconds = (t % 60).toString().padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  };
 
   return (
     <main className="min-h-screen bg-gray-100 p-8">
@@ -329,7 +338,7 @@ export default function IRACPage() {
             </button>
             <button
               onClick={() => {
-                downloadMarkdown({ issue, rule, analysis, conclusion });
+                downloadMarkdown({ issue, rule, analysis, conclusion }, time);
                 setIsDoneOpen(false);
               }}
               className="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
@@ -338,7 +347,7 @@ export default function IRACPage() {
             </button>
             <button
               onClick={() => {
-                spillNotesAsWord({ issue, rule, analysis, conclusion });
+                spillNotesAsWord({ issue, rule, analysis, conclusion }, time);
                 setIsDoneOpen(false);
               }}
               className="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"

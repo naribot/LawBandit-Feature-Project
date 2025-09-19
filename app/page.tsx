@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight text-indigo-900 -mt-4 mb-15 ml-10">
+        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight text-indigo-900 -mt-4 mb-15 ml-5">
           LawBandit
         </h1>
 
@@ -17,7 +17,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setShowCards((s) => !s)}
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto cursor-pointer"
             aria-expanded={showCards}
             aria-controls="tool-cards"
           >
@@ -25,7 +25,7 @@ export default function Home() {
           </button>
 
           <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
+            className="rounded-full bg-indigo-900 border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 p-5 w-full sm:w-auto md:w-[158px]"
             href="https://nodejs.org/en/learn/typescript/introduction"
             target="_blank"
             rel="noopener noreferrer"

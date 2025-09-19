@@ -94,7 +94,6 @@ export default function SyllabusPage() {
     setError(null);
     const text = await pdfFileToText(file);
 
-    // 🚀 send to our API route (mocked for now)
     const res = await fetch("/api/syllabus-extract", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -266,7 +265,6 @@ export default function SyllabusPage() {
             </button>
           </div>
 
-          {/* to view toggle buttons */}
           <div className="flex gap-4 mb-6">
             <button
               onClick={() => setView("list")}
