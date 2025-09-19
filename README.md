@@ -23,7 +23,8 @@ For Syllabus Converter:
 
 My first version only worked if I pasted text from the syllabus and used a date-parsing library. It worked okay for plain text, but not for PDFs with tables. To fix that, I added an API route that sends the syllabus text to a OpenAI LLM, which then returns all the important dates in JSON format. This way, uploading a syllabus PDF now works just as well as pasting plain text. I also included different ways to view the syllabus as list view and calendar view. The List View lets the user customize each item by choosing its type (reading, assignment, exam, or other) before exporting everything as an .ics file, which can then be imported into Google Calendar. The Calendar View simplifies things further by visually displaying all events in a monthly calendar layout, powered by the react-calendar library. With more time, its possible to modify the button to directly import the .ics file into google calendar using their API.
 
-For Landing Page
+For Landing Page:
+
 •	Replaced the default Next.js template with a custom homepage.
 •	Added Central button that reveals tool options (/irac and /syllabus) with links to both pages
 •	Footer links back to the main LawBandit website.
