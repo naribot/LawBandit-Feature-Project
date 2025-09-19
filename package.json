@@ -22,6 +22,14 @@
     "react-cytoscapejs": "^2.0.0",
     "react-dom": "19.1.0"
   },
+
+  "eslintConfig": {
+    "extends": "next/core-web-vitals",
+    "rules": {
+      "@typescript-eslint/no-explicit-any": "off"
+    }
+  },
+
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",

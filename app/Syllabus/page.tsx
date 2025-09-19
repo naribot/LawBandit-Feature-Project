@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 import * as chrono from "chrono-node";
-import { Inter } from "next/font/google";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { createEvents } from "ics";
 import Head from "next/head";
 
-
-
-const inter = Inter({ subsets: ["latin"] });
 
 type SyllabusItem = {
   id: string;
@@ -69,6 +65,7 @@ async function pdfFileToText(file: File): Promise<string> {
   for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
     const page = await pdf.getPage(pageNum);
     const content = await page.getTextContent();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const strings = content.items.map((it: any) =>
       "str" in it ? it.str : it?.text || ""
     );
@@ -104,6 +101,7 @@ export default function SyllabusPage() {
     const extracted = await res.json();
 
     setEvents(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       extracted.map((ev: any, i: number) => ({
         id: `llm-${i}`,
         title: ev.title || "Untitled",
