@@ -4,8 +4,9 @@ import { useState } from "react";
 import * as chrono from "chrono-node";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { createEvents } from "ics";
+import { createEvents, EventAttributes } from "ics";
 import Head from "next/head";
+
 
 
 type SyllabusItem = {
@@ -151,7 +152,7 @@ export default function SyllabusPage() {
       duration: { hours: 1 },
     }));
 
-    createEvents(icsEvents, (error, value) => {
+  createEvents(icsEvents as EventAttributes[], (error: Error | undefined, value: string) => {
       if (error) {
         console.error(error);
         return;

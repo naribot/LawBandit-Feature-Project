@@ -36,7 +36,8 @@ ${text}
     temperature: 0,
     response_format: { type: "json_object" },
   });
-
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let events: any[] = [];
   const raw = response.choices[0].message?.content ?? "{}";
 
