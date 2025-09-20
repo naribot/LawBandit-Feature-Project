@@ -77,16 +77,24 @@ async function pdfFileToText(file: File): Promise<string> {
 }
 
 
-
 export default function SyllabusPage() {
   const [inputText, setInputText] = useState("");
   const [events, setEvents] = useState<SyllabusItem[]>([]);
   const [view, setView] = useState<"list" | "calendar">("list");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
 
   const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  setLoading(true);
+
+
   const file = e.target.files?.[0];
-  if (!file) return;
+  if (!file){ 
+    setLoading(false);
+    return;
+  }
 
   try {
     setError(null);
@@ -115,6 +123,7 @@ export default function SyllabusPage() {
     console.error(err);
     setError("Failed to process the PDF. Try another file.");
   } finally {
+    setLoading(false);
     e.target.value = "";
   }
 };
@@ -362,6 +371,17 @@ export default function SyllabusPage() {
           )}
         </div>
       )}
+
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-50 z-50">
+          <div className="bg-white border-3 border-gray-200 p-8 rounded-xl shadow-lg text-center w-80">
+            <h2 className="text-2xl font-bold text-indigo-900 mb-4">Extracting Events</h2>
+            <p className="text-gray-600 mb-6">This may take a few seconds…</p>
+          <div className="w-8 h-8 mx-auto border-4 border-gray-300 border-t-indigo-600 rounded-full animate-spin"></div>
+        </div>
+      </div>
+      )}
+
     </main>
   );
 }
